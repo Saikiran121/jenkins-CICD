@@ -34,7 +34,7 @@ pipeline {
             steps {
                 script {
                     // Build and tag Docker image
-                    sh "docker build -t ${DOCKER_IMAGE} ."
+                    sh "docker build -t ${DOCKER_IMAGE} /home/ubuntu/jenkins-CICD/spring-boot-app/."
                     // Push Docker image to registry
                     sh "docker push ${DOCKER_IMAGE}"
                 }
