@@ -1,9 +1,8 @@
 pipeline {
-  agent {
+    agent any
     environment {
         DOCKER_IMAGE = "my-spring-boot-app:${BUILD_NUMBER}"
     }
-  }
   stages {
     stage('Checkout') {
       steps {
