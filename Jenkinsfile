@@ -1,8 +1,7 @@
 pipeline {
   agent {
-    docker {
-      image 'saikiran8050/docker-agent:v1'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+    environment {
+        DOCKER_IMAGE = "my-spring-boot-app:${BUILD_NUMBER}"
     }
   }
   stages {
@@ -32,22 +31,16 @@ pipeline {
       }
     }
 
-     stage('Build and Push Docker Image') {
-      environment {
-        DOCKER_IMAGE = "my-spring-boot-app:${BUILD_NUMBER}"
-        DOCKERFILE_LOCATION = "spring-boot-app/Dockerfile"
-        REGISTRY_CREDENTIALS = credentials('dockerhub')
-      }
-      steps {
-        script {
-            sh 'cd spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
-            def dockerImage = docker.image("${DOCKER_IMAGE}")
-            docker.withRegistry('https://index.docker.io/v1/', "dockerhub") {
-                dockerImage.push()
+      stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    // Build and tag Docker image
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                    // Push Docker image to registry
+                    sh "docker push ${DOCKER_IMAGE}"
+                }
             }
         }
-      }
-    }
 
     stage('Update Deployment File') {
       environment {
